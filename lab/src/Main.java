@@ -12,7 +12,7 @@ import java.io.PrintWriter;
 import java.util.Scanner;
 
 
-public class App {
+public class Main {
 
 
     // Método para añadir registro a archivo multa - Punto 2
