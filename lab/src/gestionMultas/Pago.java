@@ -4,49 +4,38 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 public class Pago {
+    private String codigoMulta;
+    private LocalDate fechaPago;
+    private double montoPagado;
 
-    private String Placa;
-    private LocalDate FechaPago;
-    private double MontoPagado;
+    private static final DateTimeFormatter DF = DateTimeFormatter.ISO_LOCAL_DATE;
 
-    //Constructor
-    public Pago(String Placa, LocalDate FechaPago, double MontoPagado) {
-        this.Placa = Placa;
-        this.FechaPago = FechaPago;
-        this.MontoPagado = MontoPagado;
+    public Pago(String codigoMulta, LocalDate fechaPago, double montoPagado) {
+        this.codigoMulta = codigoMulta;
+        this.fechaPago = fechaPago;
+        this.montoPagado = montoPagado;
     }
 
-    //Constructor a linea en CSV
-    public Pago(String lineaCSV) {
-        String[] parts = lineaCSV.split(",");
-        if (parts.length >= 3) {
-            this.Placa = parts[0].trim();
-            this.FechaPago = LocalDate.parse(parts[1].trim(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-            this.MontoPagado = Double.parseDouble(parts[2].trim());
-        }
+    // Constructor desde CSV
+    public Pago(String lineaCSV) throws Exception {
+        String[] p = lineaCSV.split(",");
+        if (p.length < 3) throw new Exception("Registro de pago con campos insuficientes");
+        this.codigoMulta = p[0].trim();
+        this.fechaPago = LocalDate.parse(p[1].trim(), DF);
+        this.montoPagado = Double.parseDouble(p[2].trim());
     }
 
-    //Despues de validacion guardar 
     public String pasarACSV() {
-        DateTimeFormatter formateador = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-        return String.format("%s,%s,%.2f",
-                Placa, FechaPago.format(formateador), MontoPagado);
+        return String.format("%s,%s,%.2f", codigoMulta, fechaPago.format(DF), montoPagado);
     }
 
-    // Getters and Setters
-    public String getPlaca() { return Placa; }
-    public void setPlaca(String Placa) { this.Placa = Placa; }
-    
-    public LocalDate getFechaPago() { return FechaPago; }
-    public void setFechaPago(LocalDate FechaPago) { this.FechaPago = FechaPago; }
-    
-    public double getMontoPagado() { return MontoPagado; }
-    public void setMontoPagado(double MontoPagado) { this.MontoPagado = MontoPagado; }
-    
+    public String getCodigoMulta() { return codigoMulta; }
+    public LocalDate getFechaPago() { return fechaPago; }
+    public double getMontoPagado() { return montoPagado; }
+
     @Override
     public String toString() {
-        return String.format("Pago - Placa: %s, Fecha: %s, Monto: $%.2f", 
-                Placa, FechaPago, MontoPagado);
+        return String.format("Pago - Multa: %s, Fecha: %s, Monto: %.2f",
+                codigoMulta, fechaPago.format(DF), montoPagado);
     }
 }
