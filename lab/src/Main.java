@@ -27,7 +27,7 @@ public class Main {
             // if false the file will be deleted and created everytime
             // if true the registers will be appended to the end of the file
 
-            PrintWriter registro_multasr = new PrintWriter(outFile);
+            PrintWriter registro_multas = new PrintWriter(outFile);
             
             // LOGICA
             String hay_Mas;
