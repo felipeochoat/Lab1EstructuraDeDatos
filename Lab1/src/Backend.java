@@ -4,6 +4,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class Backend {
 
@@ -62,17 +65,17 @@ public class Backend {
             String linea;
             while ((linea = br.readLine()) != null) {
                 String[] partes = linea.split(",");
-                if (!partes[0].equals(codigo)) pwTemp.println(linea); // copiar otras multas
+                if (!partes[0].equals(codigo)) pwTemp.println(linea);
                 else cuotas = Integer.parseInt(partes[1]);
             }
 
         } catch (IOException e) {
-            // archivo vacío, ignorar
+            // archivo vacío
         }
 
         if (cuotas >= 3) return new PagoResultado("❌ Esta multa ya tiene el máximo de 3 pagos.", 0);
 
-        cuotas++; // sumar la cuota actual
+        cuotas++;
 
         try (PrintWriter pw = new PrintWriter(new FileWriter(tempCuotas, true))) {
             pw.println(codigo + "," + cuotas);
@@ -159,5 +162,87 @@ public class Backend {
             e.printStackTrace();
         }
         return sb.toString();
+    }
+
+    // === 4. Consultar multas por placa ===
+    public String consultarMultaPorPlaca(String placa) {
+        StringBuilder sb = new StringBuilder();
+        try (BufferedReader br = new BufferedReader(new FileReader(Multas_Registradas))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                String[] partes = linea.split(",");
+                if (partes.length >= 7 && partes[1].equalsIgnoreCase(placa)) {
+                    sb.append(linea).append("\n");
+                }
+            }
+        } catch (IOException e) {
+            return "❌ Error al leer las multas.";
+        }
+        return sb.length() == 0 ? "No se encontraron multas para la placa " + placa : sb.toString();
+    }
+
+    // === 5. Consultar multas por cédula ===
+    public String consultarMultaPorCedula(String cedula) {
+        StringBuilder sb = new StringBuilder();
+        try (BufferedReader br = new BufferedReader(new FileReader(Multas_Registradas))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                String[] partes = linea.split(",");
+                if (partes.length >= 7 && partes[2].equals(cedula)) {
+                    sb.append(linea).append("\n");
+                }
+            }
+        } catch (IOException e) {
+            return "❌ Error al leer las multas.";
+        }
+        return sb.length() == 0 ? "No se encontraron multas para la cédula " + cedula : sb.toString();
+    }
+
+    // === 6. Consultar multas vencidas por placa ===
+    public String consultarMultasVencidasPorPlaca(String placa) {
+        return consultarMultasVencidas("placa", placa);
+    }
+
+    // === 7. Consultar multas vencidas por cédula ===
+    public String consultarMultasVencidasPorCedula(String cedula) {
+        return consultarMultasVencidas("cedula", cedula);
+    }
+
+    // === Lógica común para vencidas ===
+    private String consultarMultasVencidas(String tipo, String valor) {
+        StringBuilder sb = new StringBuilder();
+        LocalDate hoy = LocalDate.now();
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        try (BufferedReader br = new BufferedReader(new FileReader(Multas_Registradas))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                String[] partes = linea.split(",");
+                if (partes.length >= 7) {
+                    String placa = partes[1];
+                    String cedula = partes[2];
+                    String fechaStr = partes[5];
+                    double pendiente = Double.parseDouble(partes[6]);
+
+                    try {
+                        LocalDate fechaMulta = LocalDate.parse(fechaStr, fmt);
+                        long dias = java.time.temporal.ChronoUnit.DAYS.between(fechaMulta, hoy);
+
+                        boolean coincide = (tipo.equals("placa") && placa.equalsIgnoreCase(valor))
+                                || (tipo.equals("cedula") && cedula.equals(valor));
+
+                        if (coincide && dias > 90 && pendiente > 0.0001) {
+                            sb.append(linea).append(" → VENCIDA (").append(dias).append(" días)\n");
+                        }
+                    } catch (DateTimeParseException e) {
+                        // ignorar líneas mal formateadas
+                    }
+                }
+            }
+        } catch (IOException e) {
+            return "❌ Error al leer las multas.";
+        }
+
+        return sb.length() == 0 ? "No se encontraron multas vencidas para " + valor : sb.toString();
     }
 }
