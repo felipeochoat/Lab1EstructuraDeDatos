@@ -28,18 +28,39 @@ public class Backend {
     // === 1. Agregar multa ===
     public String agregarMulta(String codigo, String placa, String cedula, String nombre,
                                String tipo, String fecha, double monto) {
-        if (monto <= 0) return "❌ El monto debe ser mayor que 0.";
+
+       if (monto <= 0) return "❌ El monto debe ser mayor que 0.";
+    try {
+        if (existeCodigoMulta(codigo)==true) {
+            return "❌ Ya existe una multa con el código: " + codigo;
+        }
 
         try (PrintWriter pw = new PrintWriter(new FileWriter(Multas_Registradas, true))) {
             pw.println(codigo + "," + placa + "," + cedula + "," + nombre + ","
                     + tipo + "," + fecha + "," + monto + ",Pendiente");
-            return "✅ Multa registrada correctamente.";
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "❌ Error al registrar la multa.";
         }
+        return "✅ Multa registrada correctamente.";
+    } catch (IOException e) {
+        e.printStackTrace();
+        return "❌ Error al registrar la multa.";
     }
+}
 
+    public boolean existeCodigoMulta(String codigo) throws IOException{
+        try (BufferedReader br = new BufferedReader(new FileReader(Multas_Registradas))) {
+        String linea;
+        while ((linea = br.readLine()) != null) {
+            String[] partes = linea.split(",");
+            if (partes[0].equals(codigo)) {
+                return true; 
+            }
+        }
+        return false; 
+    }
+}
+
+    
+    
     // === Clase interna para devolver resultado de pago ===
     public static class PagoResultado {
         public String mensaje;
