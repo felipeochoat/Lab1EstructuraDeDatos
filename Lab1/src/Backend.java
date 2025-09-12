@@ -73,6 +73,9 @@ public class Backend {
     }
 
     // === 2. Registrar pago ===
+
+    //HACER EL METODO DE FECHAS PASADAS
+     
     public PagoResultado registrarPago(String codigo, String fecha, double monto) {
         if (monto <= 0) return new PagoResultado("❌ El monto del pago debe ser mayor que 0.", 0);
 
@@ -218,19 +221,39 @@ public class Backend {
         }
         return sb.length() == 0 ? "No se encontraron multas para la cédula " + cedula : sb.toString();
     }
+    // === 6. Consultar multas por codigo ===
+    public String consultarMultaPorCodigo(String codigo) {
+        StringBuilder sb = new StringBuilder();
+        try (BufferedReader br = new BufferedReader(new FileReader(Multas_Registradas))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                String[] partes = linea.split(",");
+                if (partes.length >= 7 && partes[0].equals(codigo)) {
+                    sb.append(linea).append("\n");
+                }
+            }
+        } catch (IOException e) {
+            return "❌ Error al leer las multas.";
+        }
+        return sb.length() == 0 ? "No se encontraron multas para el codigo " + codigo : sb.toString();
+    }
 
-    // === 6. Consultar multas vencidas por placa ===
+    // === 7. Consultar multas vencidas por placa ===
     public String consultarMultasVencidasPorPlaca(String placa) {
         return consultarMultasVencidas("placa", placa);
     }
 
-    // === 7. Consultar multas vencidas por cédula ===
+    // === 8. Consultar multas vencidas por cédula ===
     public String consultarMultasVencidasPorCedula(String cedula) {
         return consultarMultasVencidas("cedula", cedula);
     }
+    // === 9. Consultar multas vencidas por codigo ===
+    public String consultarMultasVencidasPorCodigo(String codigo) {
+        return consultarMultasVencidas("codigo", codigo);
+    }
 
     // === Lógica común para vencidas ===
-    private String consultarMultasVencidas(String tipo, String valor) {
+    public String consultarMultasVencidas(String tipo, String valor) {
         StringBuilder sb = new StringBuilder();
         LocalDate hoy = LocalDate.now();
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -240,6 +263,7 @@ public class Backend {
             while ((linea = br.readLine()) != null) {
                 String[] partes = linea.split(",");
                 if (partes.length >= 7) {
+                    String codigo = partes[0];
                     String placa = partes[1];
                     String cedula = partes[2];
                     String fechaStr = partes[5];
@@ -250,7 +274,8 @@ public class Backend {
                         long dias = java.time.temporal.ChronoUnit.DAYS.between(fechaMulta, hoy);
 
                         boolean coincide = (tipo.equals("placa") && placa.equalsIgnoreCase(valor))
-                                || (tipo.equals("cedula") && cedula.equals(valor));
+                                || (tipo.equals("cedula") && cedula.equals(valor)) || 
+                                (tipo.equals("codigo") && codigo.equals(valor));
 
                         if (coincide && dias > 90 && pendiente > 0.0001) {
                             sb.append(linea).append(" → VENCIDA (").append(dias).append(" días)\n");

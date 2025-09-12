@@ -116,10 +116,11 @@ public class Frontend extends JFrame {
                 if (fechaStr == null) return;
                 try {
                     fecha = LocalDate.parse(fechaStr.trim());
+                    
                     if (fecha.isAfter(LocalDate.now())) {
                         JOptionPane.showMessageDialog(this, "❌ No se permiten fechas futuras.");
                         fecha = null;
-                    }
+                    }// hacer is before para pagos en backend
                 } catch (DateTimeParseException ex) {
                     JOptionPane.showMessageDialog(this, "❌ Fecha inválida.");
                 }
@@ -141,9 +142,9 @@ public class Frontend extends JFrame {
             JOptionPane.showMessageDialog(this, resultado.mensaje + " | Cuotas restantes: " + resultado.cuotasRestantes);
         });
 
-        // === 3. Consultar multa (por placa o cédula) ===
+        // === 3. Consultar multa (por placa, cédula o codigo) ===
         btnConsultar.addActionListener(e -> {
-            String[] opciones = {"Placa", "Cédula"};
+            String[] opciones = {"Placa", "Cédula","Código"};
             String opcion = (String) JOptionPane.showInputDialog(this, "Buscar por:", "Consulta",
                     JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
             if (opcion == null) return;
@@ -156,13 +157,20 @@ public class Frontend extends JFrame {
                     return;
                 }
                 resultado = backend.consultarMultaPorPlaca(placa);
-            } else {
+            } else if (opcion.equals("Cédula")){
                 String cedula = JOptionPane.showInputDialog(this, "Cédula (10 dígitos):");
                 if (cedula == null || !cedula.matches("^[0-9]{10}$")) {
                     JOptionPane.showMessageDialog(this, "❌ Cédula inválida.");
                     return;
                 }
                 resultado = backend.consultarMultaPorCedula(cedula);
+            }else{  
+                String codigo = JOptionPane.showInputDialog(this, "Código (5 dígitos):");
+                if (codigo == null || !codigo.matches("^[0-9]{5}$")) {
+                    JOptionPane.showMessageDialog(this, "❌ Código inválido.");
+                    return;
+                }
+                resultado = backend.consultarMultaPorCodigo(codigo);
             }
 
             JOptionPane.showMessageDialog(this, resultado);
@@ -170,7 +178,7 @@ public class Frontend extends JFrame {
 
         // === 4. Consultar multas vencidas ===
         btnVencidas.addActionListener(e -> {
-            String[] opciones = {"Placa", "Cédula"};
+            String[] opciones = {"Placa", "Cédula", "Código"};
             String opcion = (String) JOptionPane.showInputDialog(this, "Buscar vencidas por:", "Consulta Vencidas",
                     JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
             if (opcion == null) return;
@@ -183,13 +191,21 @@ public class Frontend extends JFrame {
                     return;
                 }
                 resultado = backend.consultarMultasVencidasPorPlaca(placa);
-            } else {
+            } else if (opcion.equals("Cédula")) {
                 String cedula = JOptionPane.showInputDialog(this, "Cédula (10 dígitos):");
                 if (cedula == null || !cedula.matches("^[0-9]{10}$")) {
                     JOptionPane.showMessageDialog(this, "❌ Cédula inválida.");
                     return;
                 }
                 resultado = backend.consultarMultasVencidasPorCedula(cedula);
+            }else{
+                String codigo = JOptionPane.showInputDialog(this, "Codigo (5 dígitos):");
+                if (codigo == null || !codigo.matches("^[0-9]{5}$")) {
+                    JOptionPane.showMessageDialog(this, "❌ Código inválido.");
+                    return;
+                }
+                resultado = backend.consultarMultasVencidasPorCodigo(codigo);
+
             }
 
             JOptionPane.showMessageDialog(this, resultado);
