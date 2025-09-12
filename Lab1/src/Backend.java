@@ -58,9 +58,6 @@ public class Backend {
         return false; 
     }
 }
-
-    
-    
     // === Clase interna para devolver resultado de pago ===
     public static class PagoResultado {
         public String mensaje;

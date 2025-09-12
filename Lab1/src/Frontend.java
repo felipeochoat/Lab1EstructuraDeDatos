@@ -1,10 +1,7 @@
-import javax.swing.*;
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import javax.swing.*;
 
 public class Frontend extends JFrame {
 
@@ -35,8 +32,8 @@ public class Frontend extends JFrame {
             while (codigo == null || codigo.length() != 5) {
                 codigo = JOptionPane.showInputDialog(this, "Código (5 caracteres):");
                 if (codigo == null) return;
+                
                 if (codigo.length() != 5) JOptionPane.showMessageDialog(this, "❌ Código inválido.");
-               
             }
 
             // Placa
