@@ -29,36 +29,38 @@ public class Backend {
     public String agregarMulta(String codigo, String placa, String cedula, String nombre,
                                String tipo, String fecha, double monto) {
 
-       if (monto <= 0) return "❌ El monto debe ser mayor que 0.";
-    try {
-        if (existeCodigoMulta(codigo)==true) {
-            return "❌ Ya existe una multa con el código: " + codigo;
-        }
-
-        try (PrintWriter pw = new PrintWriter(new FileWriter(Multas_Registradas, true))) {
-            pw.println(codigo + "," + placa + "," + cedula + "," + nombre + ","
-                    + tipo + "," + fecha + "," + monto + ",Pendiente");
-        }
-        return "✅ Multa registrada correctamente.";
-    } catch (IOException e) {
-        e.printStackTrace();
-        return "❌ Error al registrar la multa.";
-    }
-}
-
-    public boolean existeCodigoMulta(String codigo) throws IOException{
-        try (BufferedReader br = new BufferedReader(new FileReader(Multas_Registradas))) {
-        String linea;
-        while ((linea = br.readLine()) != null) {
-            String[] partes = linea.split(",");
-            if (partes[0].equals(codigo)) {
-                return true; 
+        if (monto <= 0) return "❌ El monto debe ser mayor que 0.";
+        try {
+            if (existeCodigoMulta(codigo)) {
+                return "❌ Ya existe una multa con el código: " + codigo;
             }
+
+            try (PrintWriter pw = new PrintWriter(new FileWriter(Multas_Registradas, true))) {
+                pw.println(codigo + "," + placa + "," + cedula + "," + nombre + ","
+                        + tipo + "," + fecha + "," + monto + ",Pendiente");
+            }
+            return "✅ Multa registrada correctamente.";
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "❌ Error al registrar la multa.";
         }
-        return false; 
     }
-}
-    // === Clase interna para devolver resultado de pago ===
+
+    // Verifica si existe el código de la multa
+    public boolean existeCodigoMulta(String codigo) throws IOException {
+        try (BufferedReader br = new BufferedReader(new FileReader(Multas_Registradas))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                String[] partes = linea.split(",");
+                if (partes[0].equals(codigo)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    // Clase auxiliar para devolver resultados de pagos
     public static class PagoResultado {
         public String mensaje;
         public int cuotasRestantes;
@@ -70,9 +72,6 @@ public class Backend {
     }
 
     // === 2. Registrar pago ===
-
-    //HACER EL METODO DE FECHAS PASADAS
-     
     public PagoResultado registrarPago(String codigo, String fecha, double monto) {
         if (monto <= 0) return new PagoResultado("❌ El monto del pago debe ser mayor que 0.", 0);
 
@@ -136,8 +135,15 @@ public class Backend {
                     }
 
                     if (nuevoPendiente <= 0.0001) {
+                        // Marcar como pagada antes de eliminar
+                        String pagada = partes[0] + "," + partes[1] + "," + partes[2] + "," + partes[3] + ","
+                                + partes[4] + "," + partes[5] + ",0,Pagada";
                         eliminada = true;
-                        multaEliminada = linea;
+                        multaEliminada = pagada;
+
+                        // También borrar pagos asociados (para no dejar huérfanos)
+                        limpiarPagosAsociados(codigo);
+
                     } else {
                         pwTemp.println(partes[0] + "," + partes[1] + "," + partes[2] + "," + partes[3] + ","
                                 + partes[4] + "," + partes[5] + "," + nuevoPendiente + ",Pendiente");
@@ -163,7 +169,7 @@ public class Backend {
         int cuotasRestantes = 3 - cuotas;
         if (eliminada) {
             try (PrintWriter pwEliminadas = new PrintWriter(new FileWriter(Multas_Eliminadas, true))) {
-                pwEliminadas.println(multaEliminada);
+                pwEliminadas.println(multaEliminada + " → Eliminada tras pago completo en " + LocalDate.now());
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -171,6 +177,28 @@ public class Backend {
         } else {
             return new PagoResultado("✅ Pago registrado y monto pendiente actualizado.", cuotasRestantes);
         }
+    }
+
+    // Borra los pagos de Pagos_Multas asociados a una multa ya eliminada
+    private void limpiarPagosAsociados(String codigo) {
+        File tempPagos = new File("Lab1/archivos/temp_pagos.txt");
+
+        try (BufferedReader br = new BufferedReader(new FileReader(Pagos_Multas));
+             PrintWriter pw = new PrintWriter(new FileWriter(tempPagos))) {
+
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                String[] partes = linea.split(",");
+                if (!partes[0].equals(codigo)) {
+                    pw.println(linea);
+                }
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (Pagos_Multas.delete()) tempPagos.renameTo(Pagos_Multas);
     }
 
     // === 3. Consultar todas las multas ===
@@ -218,6 +246,7 @@ public class Backend {
         }
         return sb.length() == 0 ? "No se encontraron multas para la cédula " + cedula : sb.toString();
     }
+
     // === 6. Consultar multas por codigo ===
     public String consultarMultaPorCodigo(String codigo) {
         StringBuilder sb = new StringBuilder();
@@ -244,6 +273,7 @@ public class Backend {
     public String consultarMultasVencidasPorCedula(String cedula) {
         return consultarMultasVencidas("cedula", cedula);
     }
+
     // === 9. Consultar multas vencidas por codigo ===
     public String consultarMultasVencidasPorCodigo(String codigo) {
         return consultarMultasVencidas("codigo", codigo);
@@ -271,8 +301,8 @@ public class Backend {
                         long dias = java.time.temporal.ChronoUnit.DAYS.between(fechaMulta, hoy);
 
                         boolean coincide = (tipo.equals("placa") && placa.equalsIgnoreCase(valor))
-                                || (tipo.equals("cedula") && cedula.equals(valor)) || 
-                                (tipo.equals("codigo") && codigo.equals(valor));
+                                || (tipo.equals("cedula") && cedula.equals(valor))
+                                || (tipo.equals("codigo") && codigo.equals(valor));
 
                         if (coincide && dias > 90 && pendiente > 0.0001) {
                             sb.append(linea).append(" → VENCIDA (").append(dias).append(" días)\n");
