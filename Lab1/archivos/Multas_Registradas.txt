@@ -1,5 +1,4 @@
-12345,ABC123,1042248774,Felipe Ochoa,Exceso de velocidad,2025-05-09,10.0,Pendiente
 55555,UPP778,2514789630,Eduardo Ibarra,Exceso de velocidad,2006-09-30,30000.0,Pendiente
-78451,OPC345,7845124578,Pepe,Exceso de velocidad,2025-09-10,200000.0,Pendiente
+78451,OPC345,7845124578,Pepe,Exceso de velocidad,2025-09-10,191000.0,Pendiente
 78412,UPP778,2514789630,Eduardo Ibarra,Semáforo en rojo,2025-06-03,8000.0,Pendiente
 98765,ABC987,1234567899,Jose ,Semáforo en rojo,2025-06-08,900000.0,Pendiente
