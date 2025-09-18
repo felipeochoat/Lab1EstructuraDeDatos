@@ -117,7 +117,14 @@ public class Frontend extends JFrame {
                     if (fecha.isAfter(LocalDate.now())) {
                         JOptionPane.showMessageDialog(this, "❌ No se permiten fechas futuras.");
                         fecha = null;
-                    }// hacer is before para pagos en backend
+                    }
+
+                    boolean sw = backend.fechaPasada(fechaStr,codigo);
+                    if (sw){
+                        JOptionPane.showMessageDialog(this, "❌ No se permiten fechas pasadas a la multa registrada.");
+                        fecha = null;
+                    }
+
                 } catch (DateTimeParseException ex) {
                     JOptionPane.showMessageDialog(this, "❌ Fecha inválida.");
                 }

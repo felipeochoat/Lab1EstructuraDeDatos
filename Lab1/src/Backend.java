@@ -178,6 +178,26 @@ public class Backend {
             return new PagoResultado("✅ Pago registrado y monto pendiente actualizado.", cuotasRestantes);
         }
     }
+        public boolean fechaPasada(String fecha,String codigo){
+            LocalDate fechaPago = LocalDate.parse(fecha, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            try (BufferedReader br = new BufferedReader(new FileReader(Multas_Registradas))) {
+                String linea;
+                while ((linea = br.readLine()) != null) {
+                    String[] partes = linea.split(",");
+                    if (partes[0].equals(codigo)) {
+                        LocalDate fechaMulta = LocalDate.parse(partes[5], DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                    if (fechaPago.isBefore(fechaMulta)) {
+                        return true; 
+                        }
+                    }
+                }
+                
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return false;
+
+        }
 
     // Borra los pagos de Pagos_Multas asociados a una multa ya eliminada
     private void limpiarPagosAsociados(String codigo) {
