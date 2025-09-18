@@ -119,7 +119,7 @@ public class Frontend extends JFrame {
                         fecha = null;
                     }
 
-                    boolean sw = backend.fechaPasada(fechaStr,codigo);
+                    boolean sw = backend.fechaPasada(fecha,codigo);
                     if (sw){
                         JOptionPane.showMessageDialog(this, "❌ No se permiten fechas pasadas a la multa registrada.");
                         fecha = null;

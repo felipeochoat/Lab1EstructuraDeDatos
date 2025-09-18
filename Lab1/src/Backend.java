@@ -178,15 +178,15 @@ public class Backend {
             return new PagoResultado("✅ Pago registrado y monto pendiente actualizado.", cuotasRestantes);
         }
     }
-        public boolean fechaPasada(String fecha,String codigo){
-            LocalDate fechaPago = LocalDate.parse(fecha, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        public boolean fechaPasada(LocalDate fecha,String codigo){
+            
             try (BufferedReader br = new BufferedReader(new FileReader(Multas_Registradas))) {
                 String linea;
                 while ((linea = br.readLine()) != null) {
                     String[] partes = linea.split(",");
                     if (partes[0].equals(codigo)) {
                         LocalDate fechaMulta = LocalDate.parse(partes[5], DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                    if (fechaPago.isBefore(fechaMulta)) {
+                    if (fecha.isBefore(fechaMulta)) {
                         return true; 
                         }
                     }
