@@ -17,6 +17,8 @@ public class Frontend extends JFrame {
 
         // === Crear Tabs ===
         JTabbedPane tabs = new JTabbedPane();
+        tabs.setBackground(new Color(245, 245, 245));
+        tabs.setForeground(new Color(40, 40, 40));
 
         // Paneles
         tabs.add("Agregar Multa", crearPanelAgregarMulta());
@@ -31,6 +33,7 @@ public class Frontend extends JFrame {
     // === Panel: Agregar Multa ===
     private JPanel crearPanelAgregarMulta() {
         JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
+        panel.setBackground(new Color(250, 250, 250));
 
         JTextField txtCodigo = new JTextField();
         JTextField txtPlaca = new JTextField();
@@ -43,6 +46,9 @@ public class Frontend extends JFrame {
         JTextField txtMonto = new JTextField();
 
         JButton btnAgregar = new JButton("Registrar Multa");
+        btnAgregar.setBackground(new Color(66, 135, 245));
+        btnAgregar.setForeground(Color.WHITE);
+        btnAgregar.setFocusPainted(false);
 
         panel.add(new JLabel("Código:")); panel.add(txtCodigo);
         panel.add(new JLabel("Placa:")); panel.add(txtPlaca);
@@ -77,12 +83,16 @@ public class Frontend extends JFrame {
     // === Panel: Registrar Pago ===
     private JPanel crearPanelRegistrarPago() {
         JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
+        panel.setBackground(new Color(250, 250, 250));
 
         JTextField txtCodigo = new JTextField();
         JTextField txtFecha = new JTextField("YYYY-MM-DD");
         JTextField txtMonto = new JTextField();
 
         JButton btnPago = new JButton("Registrar Pago");
+        btnPago.setBackground(new Color(66, 135, 245));
+        btnPago.setForeground(Color.WHITE);
+        btnPago.setFocusPainted(false);
 
         panel.add(new JLabel("Código Multa:")); panel.add(txtCodigo);
         panel.add(new JLabel("Fecha de pago:")); panel.add(txtFecha);
@@ -110,11 +120,16 @@ public class Frontend extends JFrame {
     // === Panel: Consultar Multas ===
     private JPanel crearPanelConsultar() {
         JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(new Color(250, 250, 250));
 
         JPanel arriba = new JPanel();
+        arriba.setBackground(new Color(235, 240, 245));
         JComboBox<String> cbFiltro = new JComboBox<>(new String[]{"Placa", "Cédula", "Código"});
         JTextField txtValor = new JTextField(10);
         JButton btnBuscar = new JButton("Consultar");
+        btnBuscar.setBackground(new Color(66, 135, 245));
+        btnBuscar.setForeground(Color.WHITE);
+        btnBuscar.setFocusPainted(false);
 
         arriba.add(new JLabel("Buscar por:"));
         arriba.add(cbFiltro);
@@ -123,6 +138,7 @@ public class Frontend extends JFrame {
 
         JTextArea areaResultados = new JTextArea();
         areaResultados.setEditable(false);
+        areaResultados.setBackground(new Color(245, 245, 245));
 
         JScrollPane scroll = new JScrollPane(areaResultados);
 
@@ -149,11 +165,16 @@ public class Frontend extends JFrame {
     // === Panel: Consultar Multas Vencidas ===
     private JPanel crearPanelVencidas() {
         JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(new Color(250, 250, 250));
 
         JPanel arriba = new JPanel();
+        arriba.setBackground(new Color(235, 240, 245));
         JComboBox<String> cbFiltro = new JComboBox<>(new String[]{"Placa", "Cédula", "Código"});
         JTextField txtValor = new JTextField(10);
         JButton btnBuscar = new JButton("Buscar Vencidas");
+        btnBuscar.setBackground(new Color(220, 53, 69));
+        btnBuscar.setForeground(Color.WHITE);
+        btnBuscar.setFocusPainted(false);
 
         arriba.add(new JLabel("Buscar vencidas por:"));
         arriba.add(cbFiltro);
@@ -162,6 +183,7 @@ public class Frontend extends JFrame {
 
         JTextArea areaResultados = new JTextArea();
         areaResultados.setEditable(false);
+        areaResultados.setBackground(new Color(245, 245, 245));
 
         JScrollPane scroll = new JScrollPane(areaResultados);
 
