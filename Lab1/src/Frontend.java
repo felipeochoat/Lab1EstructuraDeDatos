@@ -8,18 +8,19 @@ public class Frontend extends JFrame {
     private Backend backend;
 
     public Frontend(Backend backend) {
-        super("Gestión de Multas de Tránsito");
+        super("Gestión de Multas de Tránsito"); // título ventana
         this.backend = backend;
 
-        setSize(750, 550);
+        setSize(750, 550); // tamaño de la ventana
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
+        setLocationRelativeTo(null); // centrar en pantalla
 
-        // === Crear Tabs ===
+        // Pestañas principales de la interfaz
         JTabbedPane tabs = new JTabbedPane();
         tabs.setBackground(new Color(245, 245, 245));
         tabs.setForeground(new Color(40, 40, 40));
 
+        // cada pestaña corresponde a una funcionalidad
         tabs.add("Agregar Multa", crearPanelAgregarMulta());
         tabs.add("Registrar Pago", crearPanelRegistrarPago());
         tabs.add("Consultar Multas", crearPanelConsultar());
@@ -29,11 +30,12 @@ public class Frontend extends JFrame {
         setVisible(true);
     }
 
-    // === Panel: Agregar Multa ===
+    // === Panel para registrar una nueva multa ===
     private JPanel crearPanelAgregarMulta() {
         JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
         panel.setBackground(new Color(250, 250, 250));
 
+        // campos de entrada
         JTextField txtCodigo = new JTextField();
         JTextField txtPlaca = new JTextField();
         JTextField txtCedula = new JTextField();
@@ -44,10 +46,12 @@ public class Frontend extends JFrame {
         JTextField txtFecha = new JTextField("YYYY-MM-DD");
         JTextField txtMonto = new JTextField();
 
+        // botón de acción
         JButton btnAgregar = new JButton("Registrar Multa");
         btnAgregar.setBackground(new Color(66, 135, 245));
         btnAgregar.setForeground(Color.WHITE);
 
+        // agregar etiquetas y campos
         panel.add(new JLabel("Código (5 caracteres):")); panel.add(txtCodigo);
         panel.add(new JLabel("Placa (ABC123):")); panel.add(txtPlaca);
         panel.add(new JLabel("Cédula (10 dígitos):")); panel.add(txtCedula);
@@ -57,22 +61,41 @@ public class Frontend extends JFrame {
         panel.add(new JLabel("Monto:")); panel.add(txtMonto);
         panel.add(new JLabel("")); panel.add(btnAgregar);
 
+        // acción del botón
         btnAgregar.addActionListener(e -> {
             try {
+                // validación código
                 String codigo = txtCodigo.getText().trim();
-                if (codigo.length() != 5) { JOptionPane.showMessageDialog(this, "❌ Código inválido."); return; }
+                if (codigo.length() != 5) {
+                    JOptionPane.showMessageDialog(this, "❌ Código inválido.");
+                    return;
+                }
 
+                // validación placa
                 String placa = txtPlaca.getText().trim().toUpperCase();
-                if (!placa.matches("^[A-Z]{3}[0-9]{3}$")) { JOptionPane.showMessageDialog(this, "❌ Placa inválida."); return; }
+                if (!placa.matches("^[A-Z]{3}[0-9]{3}$")) {
+                    JOptionPane.showMessageDialog(this, "❌ Placa inválida.");
+                    return;
+                }
 
+                // validación cédula
                 String cedula = txtCedula.getText().trim();
-                if (!cedula.matches("^[0-9]{10}$")) { JOptionPane.showMessageDialog(this, "❌ Cédula inválida."); return; }
+                if (!cedula.matches("^[0-9]{10}$")) {
+                    JOptionPane.showMessageDialog(this, "❌ Cédula inválida.");
+                    return;
+                }
 
+                // validación nombre
                 String nombre = txtNombre.getText().trim();
-                if (!nombre.matches("^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$")) { JOptionPane.showMessageDialog(this, "❌ Nombre inválido."); return; }
+                if (!nombre.matches("^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$")) {
+                    JOptionPane.showMessageDialog(this, "❌ Nombre inválido.");
+                    return;
+                }
 
+                // tipo infracción
                 String tipo = cbTipo.getSelectedItem().toString();
 
+                // validación fecha
                 LocalDate fecha;
                 try {
                     fecha = LocalDate.parse(txtFecha.getText().trim());
@@ -85,9 +108,14 @@ public class Frontend extends JFrame {
                     return;
                 }
 
+                // validación monto
                 double monto = Double.parseDouble(txtMonto.getText().trim());
-                if (monto <= 0) { JOptionPane.showMessageDialog(this, "❌ Monto inválido."); return; }
+                if (monto <= 0) {
+                    JOptionPane.showMessageDialog(this, "❌ Monto inválido.");
+                    return;
+                }
 
+                // mandar al backend
                 String resultado = backend.agregarMulta(codigo, placa, cedula, nombre, tipo, fecha.toString(), monto);
                 JOptionPane.showMessageDialog(this, resultado);
 
@@ -99,7 +127,7 @@ public class Frontend extends JFrame {
         return panel;
     }
 
-    // === Panel: Registrar Pago ===
+    // === Panel para registrar un pago ===
     private JPanel crearPanelRegistrarPago() {
         JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
         panel.setBackground(new Color(250, 250, 250));
@@ -119,9 +147,14 @@ public class Frontend extends JFrame {
 
         btnPago.addActionListener(e -> {
             try {
+                // validar código
                 String codigo = txtCodigo.getText().trim();
-                if (codigo.length() != 5) { JOptionPane.showMessageDialog(this, "❌ Código inválido."); return; }
+                if (codigo.length() != 5) {
+                    JOptionPane.showMessageDialog(this, "❌ Código inválido.");
+                    return;
+                }
 
+                // validar fecha
                 LocalDate fecha;
                 try {
                     fecha = LocalDate.parse(txtFecha.getText().trim());
@@ -138,9 +171,14 @@ public class Frontend extends JFrame {
                     return;
                 }
 
+                // validar monto
                 double monto = Double.parseDouble(txtMonto.getText().trim());
-                if (monto <= 0) { JOptionPane.showMessageDialog(this, "❌ Monto inválido."); return; }
+                if (monto <= 0) {
+                    JOptionPane.showMessageDialog(this, "❌ Monto inválido.");
+                    return;
+                }
 
+                // llamar backend
                 Backend.PagoResultado resultado = backend.registrarPago(codigo, fecha.toString(), monto);
                 JOptionPane.showMessageDialog(this, resultado.mensaje + " | Cuotas restantes: " + resultado.cuotasRestantes);
 
@@ -152,11 +190,12 @@ public class Frontend extends JFrame {
         return panel;
     }
 
-    // === Panel: Consultar Multas ===
+    // === Panel para consultar multas ===
     private JPanel crearPanelConsultar() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(new Color(250, 250, 250));
 
+        // barra de búsqueda
         JPanel arriba = new JPanel();
         JComboBox<String> cbFiltro = new JComboBox<>(new String[]{"Placa", "Cédula", "Código"});
         JTextField txtValor = new JTextField(10);
@@ -167,10 +206,12 @@ public class Frontend extends JFrame {
         arriba.add(txtValor);
         arriba.add(btnBuscar);
 
+        // resultados
         JTextArea areaResultados = new JTextArea();
         areaResultados.setEditable(false);
         JScrollPane scroll = new JScrollPane(areaResultados);
 
+        // acción botón
         btnBuscar.addActionListener(e -> {
             String opcion = cbFiltro.getSelectedItem().toString();
             String valor = txtValor.getText().trim();
@@ -190,11 +231,12 @@ public class Frontend extends JFrame {
         return panel;
     }
 
-    // === Panel: Consultar Multas Vencidas ===
+    // === Panel para consultar multas vencidas ===
     private JPanel crearPanelVencidas() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(new Color(250, 250, 250));
 
+        // barra de búsqueda
         JPanel arriba = new JPanel();
         JComboBox<String> cbFiltro = new JComboBox<>(new String[]{"Placa", "Cédula", "Código"});
         JTextField txtValor = new JTextField(10);
@@ -207,10 +249,12 @@ public class Frontend extends JFrame {
         arriba.add(txtValor);
         arriba.add(btnBuscar);
 
+        // resultados
         JTextArea areaResultados = new JTextArea();
         areaResultados.setEditable(false);
         JScrollPane scroll = new JScrollPane(areaResultados);
 
+        // acción botón
         btnBuscar.addActionListener(e -> {
             String opcion = cbFiltro.getSelectedItem().toString();
             String valor = txtValor.getText().trim();
