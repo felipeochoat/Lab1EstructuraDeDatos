@@ -5,22 +5,22 @@ import java.time.format.DateTimeParseException;
 
 public class Frontend extends JFrame {
 
-    private Backend backend;
+    private Backend backend; //atributo para conectar
 
-    public Frontend(Backend backend) {
+    public Frontend(Backend backend) { //constructor
         super("Gestión de Multas de Tránsito"); // título ventana
-        this.backend = backend;
+        this.backend = backend; //guarda el objeto backend que maneja los datos
 
         setSize(750, 550); // tamaño de la ventana
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //cerrar al salir
         setLocationRelativeTo(null); // centrar en pantalla
 
         // Pestañas principales de la interfaz
-        JTabbedPane tabs = new JTabbedPane();
+        JTabbedPane tabs = new JTabbedPane(); //crea pestañas para organizar diferentes funcionalidades
         tabs.setBackground(new Color(245, 245, 245));
         tabs.setForeground(new Color(40, 40, 40));
 
-        // cada pestaña corresponde a una funcionalidad
+        // cada pestaña corresponde a una funcionalidad creada en JPanel
         tabs.add("Agregar Multa", crearPanelAgregarMulta());
         tabs.add("Registrar Pago", crearPanelRegistrarPago());
         tabs.add("Consultar Multas", crearPanelConsultar());
@@ -32,7 +32,7 @@ public class Frontend extends JFrame {
 
     // === Panel para registrar una nueva multa ===
     private JPanel crearPanelAgregarMulta() {
-        JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
+        JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10)); //creacion con parametros
         panel.setBackground(new Color(250, 250, 250));
 
         // campos de entrada
