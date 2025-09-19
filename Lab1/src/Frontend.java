@@ -43,7 +43,7 @@ public class Frontend extends JFrame {
         JComboBox<String> cbTipo = new JComboBox<>(new String[]{
                 "Exceso de velocidad", "Mal parqueo", "Semáforo en rojo", "Documentos vencidos"
         });
-        JTextField txtFecha = new JTextField("YYYY-MM-DD");
+        JTextField txtFecha = new JTextField();
         JTextField txtMonto = new JTextField();
 
         // botón de acción
@@ -133,7 +133,7 @@ public class Frontend extends JFrame {
         panel.setBackground(new Color(250, 250, 250));
 
         JTextField txtCodigo = new JTextField();
-        JTextField txtFecha = new JTextField("YYYY-MM-DD");
+        JTextField txtFecha = new JTextField();
         JTextField txtMonto = new JTextField();
 
         JButton btnPago = new JButton("Registrar Pago");
