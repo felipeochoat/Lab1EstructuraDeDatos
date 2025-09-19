@@ -4,3 +4,4 @@
 98765,ABC987,1234567899,Jose ,Semáforo en rojo,2025-06-08,900000.0,Pendiente
 56723,ABH456,9087654321,Alejandro,Mal parqueo,2025-08-08,100000.0,Pendiente
 12345,MXO970,1234567890,Alejandro,Exceso de velocidad,2006-06-04,100000.0,Pendiente
+20011,ABC123,1042248774,Felipe Torres,Exceso de velocidad,2013-05-06,90.0,Pendiente
